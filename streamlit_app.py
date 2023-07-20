@@ -1,20 +1,28 @@
 import streamlit as st
 
 st.title("LLM Embeddings for Document Retrieval")
+st.write("Written by [Mike Royal](https://github.com/mroyal)")
 st.write(
-    "In order to use our own documents as a corpus, we need to embed them into a vector space that the LLM "
-    "understands. But what do the actually look like and what's happening behind the scenes when we use them for "
-    "document retrieval? Let's explore."
+    "In order to use our own documents as context to an LLM, we need to embed them into a vector space that the LLM "
+    "understands, so when a user makes a query, we can find the documents that are most relevant to the query. "
+    "But what do these embeddings actually look like, and what's happening under the hood when we perform document "
+    "retrieval?"
 )
 
 st.header("Creating embeddings")
 
 st.write(
-    "The embedding process simply takes a string and returns a vector. For OpenAI, each vector has 1536 dimensions."
+    "The embedding process simply takes a string (e.g. the content of a document) and returns a vector. For OpenAI, "
+    "each vector will have exactly 1536 dimensions."
 )
+
+st.write("Let's start by creating three vectors.")
 
 st.code(
     """
+> import numpy as np
+> from langchain.embeddings.openai import OpenAIEmbeddings
+>
 > embeddings = OpenAIEmbeddings()
 > cat_vector = embeddings.embed_query("My cat hunts mice.")
 > kitten_vector = embeddings.embed_document("My kitten chases rodents.")
@@ -23,10 +31,9 @@ st.code(
     "python",
 )
 
-st.write("Let's start by creating three vectors.")
-
 st.write(
-    "You should notice that the first two are very similar, and are quite different from the last one, which is a bit of Jinja."
+    "You should notice that the first two are semantically similar, and are quite different from the last one, which "
+    "is a bit of Jinja."
 )
 st.write(
     "But what _are_ these _actually_? Let's have a look at the first vector we created."
@@ -43,7 +50,7 @@ st.write(
     "So now that we've converted our documents to embeddings, how do we use them when we want to make an LLM query?"
 )
 
-st.header("Retrieving embeddings")
+st.header("Comparing embeddings")
 
 st.write("Let's say the user makes a query like this:")
 
@@ -54,20 +61,22 @@ st.code(
 )
 
 st.write(
-    "We can embed this query and then compare it to our document vectors to find the most similar document by simply "
-    "taking the dot product of the query vector and each document vector, producing a scalar which we can think of as "
-    "a measure of similarity (or _score_)."
+    "We can create an embedding for this query and then compare it to our document vectors to find the most similar "
+    "document by simply taking the dot product of the query vector and each document vector, producing a scalar which "
+    "we can think of as a measure of similarity (or _score_)."
 )
 
 st.code(
     """
-> numpy.dot(query_vector, cat_hunts_mice)
+> query_vector = embeddings.embed_query(query)
+>
+> np.dot(query_vector, cat_hunts_mice)
 0.838113773241518
 
-> numpy.dot(query_vector, kitten_chases_rodents)
+> np.dot(query_vector, kitten_chases_rodents)
 0.8061564239371721
 
-> numpy.dot(query_vector, jinja_vector)
+> np.dot(query_vector, jinja_vector)
 0.6923842044998137
 """
 )
@@ -75,3 +84,5 @@ st.code(
 st.write("Here, we can see that although the query never mentions cats, mice, kittens, chasing, or rodents, the "
          "embeddings have encoded the information necessary to make the connection between the query and cat/kitten "
          "documents, and therefore we know that these are most likely to include valuable context for our LLM prompt.")
+
+st.write("Happy coding!")
