@@ -1,7 +1,7 @@
 import streamlit as st
 
 st.title("LLM Embeddings for Document Retrieval")
-st.write("Written by [Mike Royal](https://github.com/mroyal)")
+st.write("[Mike Royal](https://github.com/mroyal) | 2023-07-20")
 st.write(
     "In order to use our own documents as context to an LLM, we need to embed them into a vector space that the LLM "
     "understands, so when a user makes a query, we can find the documents that are most relevant to the query. "
